@@ -24,12 +24,7 @@ def send(msg):
     client.send(send_length)
     client.send(msg)
     print(client.recv(response).decode(msg_format))
-
-send("Hello World")
-
-#message = input()
-
-#send((message)
+    
 
 def start():
     while True:
