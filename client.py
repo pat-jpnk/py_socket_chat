@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
+# Add names for users joining ## DONE!
+# Add global chat log
+
 import socket 
-import time 
+import threading
 
-header = 64
-response = 512
-
-port = 7002
+header = 256
+port = 1994
 
 disconnect_msg = "!disconnect"
 server = socket.gethostbyname(socket.gethostname())
@@ -20,20 +21,39 @@ def send(msg):
     msg = msg.encode(msg_format)
     msg_length = len(msg)
     send_length = str(msg_length).encode(msg_format)
-    send_length += b' ' * (header - len(send_length))
     client.send(send_length)
     client.send(msg)
-    print(client.recv(response).decode(msg_format))
-    
+
+
+def authenticate():
+    complete = False
+
+    while (not complete):
+        print(client.recv(header).decode(msg_format))
+        name = str(input())
+        send(name)
+        response = client.recv(header).decode(msg_format)
+        if ((response.strip()) == "[+] name valid"):
+            print(response.strip())
+            complete = True
+        else:
+            print(response.strip())    
 
 def start():
+
+    # get client name
+    authenticate()
+    
     while True:
-        msg = input()
-        if (msg == '!disconnect'):
-            send(str(msg))
+        msg = str(input())
+        if (msg == disconnect_msg):
+            send(msg)
             client.close()
-            return 0
-        send(str(msg))
+        elif (len((msg).strip()) == 0) or msg.strip() == '\n':
+            pass
+        else:
+            send(msg)
 
 
-start()
+if __name__ == "__main__":
+    start()
